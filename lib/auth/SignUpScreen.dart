@@ -1,8 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:email_otp/email_otp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:email_auth/email_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:green_theme/Screens/voice_search.dart';
-import 'package:green_theme/auth/SignScreen.dart';
+import 'package:green_theme/auth/auth.config.dart';
 import 'package:green_theme/route_animation.dart';
 import 'package:green_theme/utils/regex.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({Key? key});
 
   @override
   SignUpScreenState createState() => SignUpScreenState();
@@ -19,72 +24,70 @@ class SignUpScreen extends StatefulWidget {
 
 class SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _username=TextEditingController();
+  final TextEditingController _username = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   FocusNode _passwordfocus = FocusNode();
 
   bool _isLoading = false;
-
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
       final password = _passwordController.text;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('email', email);
 
       try {
-        final url = Uri.parse('');
-        final data = {
-          'email': email,
-          'password': password,
-        };
 
-        final response = await http.post(url, body: data);
+        FirebaseAuth _auth=FirebaseAuth.instance;
+       
+     try{
+       _auth.verifyPhoneNumber(
+        phoneNumber: '+977'+_username.text,
+        verificationCompleted: (credintial){
+        print(credintial);
+      }, verificationFailed: (FirebaseAuthException error) { print(error); }, codeSent: (String verificationId, int? forceResendingToken) {print(verificationId);print(forceResendingToken);  }, codeAutoRetrievalTimeout: (String verificationId) { print(verificationId); });
+      
+     }catch(e){
+       print(e);
+     }
+       print('--------------------------------------------------');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Account created successfully. Please check your email for verification.'),
+            ),
+          );
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('email', email);
+        
+        setState(() {
+          _isLoading = false;
+        });
+        _navigateToNextScreen(context, 'signup_otp');
+      } on FirebaseAuthException catch (e) {
         if (kDebugMode) {
-          print(response.statusCode);
+          print("Firebase Auth Error: $e");
         }
 
-        if (response.statusCode == 201) {
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(json.decode(response.body)['message']),
-          ));
-          setState(() {
-            _isLoading = true;
-          });
-          // ignore: use_build_context_synchronously
-          _navigateToNextScreen(context, 'signup_otp');
-        } else if (response.statusCode == 200) {
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(json.decode(response.body)['message']),
-          ));
-          setState(() {
-            _isLoading = true;
-          });
-        }else if (response.statusCode == 400) {
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(json.decode(response.body)['error']),
-          ));
-          setState(() {
-            _isLoading = true;
-          });
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating account: ${e.message}'),
+          ),
+        );
+
+        setState(() {
+          _isLoading = false;
+        });
       } catch (error) {
-        // Handle network or unexpected errors
         if (kDebugMode) {
           print("Error: $error");
         }
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('An error occurred. Please try again.'),
-        ));
-        setState(() {
-          _isLoading = true;
-        });
-      } finally {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('An error occurred. Please try again.'),
+          ),
+        );
+
         setState(() {
           _isLoading = false;
         });
@@ -97,7 +100,9 @@ class SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    passwordVisible = true;
+    // Initialize the package
+    passwordVisible=true;
+    //initialize email-auth
   }
 
   @override
