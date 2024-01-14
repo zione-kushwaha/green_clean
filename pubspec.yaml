@@ -57,6 +57,7 @@ dependencies:
   country_picker: ^2.0.23
   pinput: ^3.0.1
   flutter_tts: ^3.8.5
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

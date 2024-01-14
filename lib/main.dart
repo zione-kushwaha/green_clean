@@ -32,10 +32,9 @@ class MyApp extends StatelessWidget {
          theme: themeProvider.currentTheme,
           debugShowCheckedModeBanner: false,
          
-          home: const Welcome(),
+          home:const Welcome(),
         );
         }
-        ,
       ),
     );
   }

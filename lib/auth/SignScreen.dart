@@ -1,15 +1,10 @@
-import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:green_theme/Screens/chatScreen.dart';
-import 'package:green_theme/auth/SignUpScreen.dart';
-import 'package:green_theme/auth/otp_screen.dart';
+import 'package:green_theme/Screens/profile_screens.dart';
 import 'package:green_theme/route_animation.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
 import '../utils/regex.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -26,65 +21,54 @@ class SignInScreenState extends State<SignInScreen> {
   FocusNode _passwordfocus = FocusNode();
   bool _isLoading = false;
 
-  Future<void> _signInForm() async {
-    if (_formKey.currentState!.validate()) {
-      // await Future.delayed(const Duration(seconds: 10));
+ Future<void> _signInForm() async {
+  if (_formKey.currentState!.validate()) {
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-      // Replace this with your actual API request
-      // Send the POST request and handle the response
-
-      // If the form is valid, perform the POST request
-      final email = _emailController.text;
-      final password = _passwordController.text;
-      // final password2 = _password2Controller.text;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('email', email);
-
-      // Send a POST request with the data
-      // final url = Uri.parse(ApiUtil.joinUrl('auth/login'));
-      final url=Uri.parse('uri');
-      if (kDebugMode) {
-        print(url);
-      }
-      final data = {
-        'email': prefs.getString('email'),
-        'password': password,
-      };
-      
-      http.post(url , body: data).then((response) {
-        print('Response Body: ${response.body}');
+    try {
+      // Sign in with email and password
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (userCredential.user != null && userCredential.user!.emailVerified) {
+       
         setState(() {
-          _isLoading = false;
+           _navigateToNextScreen(context, 'profile_screen');
+          _isLoading=false;
         });
-        Map<String, dynamic> data = json.decode(response.body);
-        // Handle the response from the server as needed
-        // Check if the request was successful and handle accordingly
-        if (response.statusCode == 200) {
-          // _emailController.clear();
-          // _passwordController.clear();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(data['message']),
-          ));
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('login Successful'),
+          ),
+        );
 
-          //otp verification screen
-          _navigateToNextScreen(context, 'signin_otp');
-        } else if (response.statusCode == 403) {
-          // _emailController.clear();
-          // _passwordController.clear();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(data['message']),
-          ));
-
-          //otp verification screen
-          _navigateToNextScreen(context, 'signup_otp');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(data['error']),
-          ));
-        }
-      });
+      } else {
+        // If email is not verified, display a message to the user
+        setState(() {
+          _isLoading=false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please verify your email before signing in.'),
+          ),
+        );
+      }
+    } catch (e) {
+ setState(() {
+   _isLoading=false;
+ });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error signing in. Please check your credentials.'),
+        ),
+      );
     }
   }
+}
+
 
   bool passwordVisible = false;
 
@@ -92,6 +76,7 @@ class SignInScreenState extends State<SignInScreen> {
   void initState() {
     super.initState();
     passwordVisible = true;
+  
   }
 
   @override
@@ -436,22 +421,22 @@ class SignInScreenState extends State<SignInScreen> {
           ),
         ),
         if (_isLoading)
-          Center(
+          const Center(
             child: CircularProgressIndicator(),
           ),
       ]),
     );
   }
 
-  void _navigateToNextScreen(BuildContext context, String screen) {
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (screen == "signin_otp") {
-        Navigator.of(context).push(createRoute(const OTPScreen(
-          usage: 'sign_in',
-        )));
-      } else if (screen == "sign_up") {
-        Navigator.of(context).push(createRoute(const chat_screens()));
+  void _navigateToNextScreen(BuildContext context, String screen){
+     Future.delayed(const Duration(milliseconds: 200), () async{
+      if (screen == "profile_screen") {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? username = prefs.getString('username');
+       Navigator.of(context).pushReplacement(createRoute( ProfileScreen( username: username ?? 'defaultUsername',email: _emailController.text,)));
+      } else if (screen == "sign_in") {
+        Navigator.of(context).pushReplacement(createRoute(const SignInScreen()));
       }
     });
-  }
+}
 }

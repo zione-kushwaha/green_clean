@@ -6,7 +6,7 @@ import 'package:email_auth/email_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:green_theme/Screens/voice_search.dart';
+import 'package:green_theme/auth/SignScreen.dart';
 import 'package:green_theme/auth/auth.config.dart';
 import 'package:green_theme/route_animation.dart';
 import 'package:green_theme/utils/regex.dart';
@@ -30,70 +30,78 @@ class SignUpScreenState extends State<SignUpScreen> {
   FocusNode _passwordfocus = FocusNode();
 
   bool _isLoading = false;
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      final email = _emailController.text;
-      final password = _passwordController.text;
+ Future<void> _submitForm() async {
+  if (_formKey.currentState!.validate()) {
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-      try {
-
-        FirebaseAuth _auth=FirebaseAuth.instance;
-       
-     try{
-       _auth.verifyPhoneNumber(
-        phoneNumber: '+977'+_username.text,
-        verificationCompleted: (credintial){
-        print(credintial);
-      }, verificationFailed: (FirebaseAuthException error) { print(error); }, codeSent: (String verificationId, int? forceResendingToken) {print(verificationId);print(forceResendingToken);  }, codeAutoRetrievalTimeout: (String verificationId) { print(verificationId); });
+    try {
+      FirebaseAuth _auth = FirebaseAuth.instance;
       
-     }catch(e){
-       print(e);
-     }
-       print('--------------------------------------------------');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Account created successfully. Please check your email for verification.'),
-            ),
-          );
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('email', email);
-        
-        setState(() {
-          _isLoading = false;
-        });
-        _navigateToNextScreen(context, 'signup_otp');
-      } on FirebaseAuthException catch (e) {
-        if (kDebugMode) {
-          print("Firebase Auth Error: $e");
-        }
+      // Add await here
+      await _auth.createUserWithEmailAndPassword(email: email, password: password);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating account: ${e.message}'),
-          ),
-        );
+      User? user = _auth.currentUser;
 
-        setState(() {
-          _isLoading = false;
-        });
-      } catch (error) {
-        if (kDebugMode) {
-          print("Error: $error");
-        }
-
+      // Check if user exists and email is not verified
+      if (user != null && !user.emailVerified) {
+        // Send email verification
+        await user.sendEmailVerification();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('An error occurred. Please try again.'),
+            content: Text(
+              'Account created successfully. Please check your email for verification.',
+            ),
           ),
         );
 
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('username', _username.text);
+
         setState(() {
+          _navigateToNextScreen(context, 'sign_in');
           _isLoading = false;
         });
+      } else {
+        // Handle the case where the user is null or email is already verified
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User is null or email is already verified.'),
+          ),
+        );
       }
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print("Firebase Auth Error: $e");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error creating account: ${e.message}'),
+        ),
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (kDebugMode) {
+        print("Error: $error");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred. Please try again.'),
+        ),
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+}
+
 
   bool passwordVisible = false;
 
@@ -589,11 +597,9 @@ class SignUpScreenState extends State<SignUpScreen> {
   void _navigateToNextScreen(BuildContext context, String screen) {
     Future.delayed(const Duration(milliseconds: 200), () {
       if (screen == "signup_otp") {
-        // Navigator.of(context).push(createRoute(const OTPScreen(
-        //   usage: 'sign_up',
-        // )));
+       
       } else if (screen == "sign_in") {
-        Navigator.of(context).push(createRoute(const speech()));
+        Navigator.of(context).pushReplacement(createRoute(const SignInScreen()));
       }
     });
   }
