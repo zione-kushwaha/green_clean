@@ -49,15 +49,12 @@ dependencies:
   flutter_markdown: ^0.6.18+3
   lottie: ^2.7.0
   speech_to_text: ^6.5.1
-  email_otp: ^2.1.1
   firebase_phone_auth_handler: ^1.0.8
-  email_auth: ^1.1.1
-  intl_phone_number_input: ^0.7.4
-  get: ^4.6.6
-  country_picker: ^2.0.23
-  pinput: ^3.0.1
   flutter_tts: ^3.8.5
   carousel_slider: ^4.2.1
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+  markdown: ^7.2.0
 
 dev_dependencies:
   flutter_test:

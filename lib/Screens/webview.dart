@@ -58,7 +58,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''
-Page resource error:
+  Page resource error:
   code: ${error.errorCode}
   description: ${error.description}
   errorType: ${error.errorType}
@@ -86,7 +86,8 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse('https://caremeticsonline.com/'));
+      ..loadRequest(Uri.parse(
+          'https://f03e-2407-5200-300-3ed1-3d56-c20a-40a1-6f5d.ngrok-free.app'));
 
     if (controller.platform is AndroidWebViewPlatform) {
       // Handle any Android-specific configurations here if needed

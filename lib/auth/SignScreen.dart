@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:green_theme/Screens/profile_screens.dart';
+import 'package:green_theme/auth/SignUpScreen.dart';
 import 'package:green_theme/route_animation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -434,8 +436,8 @@ class SignInScreenState extends State<SignInScreen> {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? username = prefs.getString('username');
        Navigator.of(context).pushReplacement(createRoute( ProfileScreen( username: username ?? 'defaultUsername',email: _emailController.text,)));
-      } else if (screen == "sign_in") {
-        Navigator.of(context).pushReplacement(createRoute(const SignInScreen()));
+      } else if (screen == "sign_up") {
+        Navigator.of(context).pushReplacement(createRoute(const SignUpScreen()));
       }
     });
 }

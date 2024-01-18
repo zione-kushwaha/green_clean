@@ -5,6 +5,7 @@ import 'package:green_theme/Screens/image_response.dart';
 import 'package:green_theme/Screens/query_section.dart';
 import 'package:green_theme/Screens/webview.dart';
 import 'package:green_theme/drawer/drawer.dart';
+import 'package:green_theme/route_animation.dart';
 
 class ProfileScreen extends StatelessWidget {
   String username;
@@ -64,9 +65,7 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 15,),
            GestureDetector(
             onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context){
-                return const ChatScreen();
-              }));
+            _navigateToNextScreen(context, 'chat');
             },
              child: Container(
              margin: const EdgeInsets.all(13),
@@ -84,9 +83,7 @@ class ProfileScreen extends StatelessWidget {
            ),
            GestureDetector(
              onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context){
-                return const TextInputScreen();
-              }));
+               _navigateToNextScreen(context, 'query');
             },
              child: Container(
              margin: const EdgeInsets.all(13),
@@ -104,9 +101,7 @@ class ProfileScreen extends StatelessWidget {
            ),
            GestureDetector(
               onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context){
-                return const TextAndImageInputScreen();
-              }));
+           _navigateToNextScreen(context, 'image');
             },
              child: Container(
              margin: const EdgeInsets.all(13),
@@ -123,11 +118,9 @@ class ProfileScreen extends StatelessWidget {
              ),
            ),
            GestureDetector(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context){
-                return const WebViewExample();
-              }));
-            },
+           onTap: (){
+          _navigateToNextScreen(context, 'web');
+           },
              child: Container(
              margin: const EdgeInsets.all(13),
               height: height*0.09,
@@ -136,10 +129,11 @@ class ProfileScreen extends StatelessWidget {
                   gradient: LinearGradient(colors:  [
                             Colors.yellow.withOpacity(0.9),
                             Colors.yellow.withOpacity(0.8),
-                            Colors.yellow.withOpacity(0.5)
+                            Colors.yellow.withOpacity(0.5),
                           ],)
                 ),
-                child:  const Center(child: Text("More Detail section",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color:Colors.white),)),
+                child:  const Center(child: Text("More Detail section",
+                style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color:Colors.white),)),
              ),
            )
         
@@ -149,4 +143,18 @@ class ProfileScreen extends StatelessWidget {
     );
 
   }
+   void _navigateToNextScreen(BuildContext context, String screen){
+     Future.delayed(const Duration(milliseconds: 200), () async{
+      if (screen == "chat") {
+       
+       Navigator.of(context).push(createRoute(const ChatScreen()));
+      } else if (screen == "query") {
+        Navigator.of(context).push(createRoute(const querySection() ));
+      }else if(screen=='image'){
+         Navigator.of(context).push(createRoute(const TextAndImageInputScreen()));
+      }else if(screen=='web'){
+        Navigator.of(context).push(createRoute(const WebViewExample()));
+      }
+    });
+}
 }
