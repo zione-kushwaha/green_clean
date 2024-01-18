@@ -55,11 +55,35 @@ class Drawer_section extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
+           
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
                 // Handle Profile option
+                Navigator.pop(context);}
+            ),
+             ListTile(
+              leading: const Icon(Icons.key),
+              title: const Text('Licence'),
+              onTap: () {
+                // Handle Home option
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.share),
+              title: const Text('Share'),
+              onTap: () {
+                // Handle Home option
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.star),
+              title: const Text('Ratting'),
+              onTap: () {
+                // Handle Home option
                 Navigator.pop(context);
               },
             ),
