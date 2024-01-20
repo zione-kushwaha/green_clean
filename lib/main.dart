@@ -1,18 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:green_theme/auth/welcome_screen.dart';
 import 'package:green_theme/providers/themeProvider.dart';
 import 'package:provider/provider.dart';
-
 import 'firebase_options.dart';
+import './Screens/profile_screens.dart';
 
+//weatherpikey:- de30a0d751384a7fb1282d2a2e50e31b
 void main() async{
    WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
 );
-   Gemini.init(apiKey: 'AIzaSyD0X6fPUT-tXaV_MxI4CdGMv-M9lj-1BSU');
   runApp(const MyApp());
 }
 
@@ -31,7 +30,6 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
          theme: themeProvider.currentTheme,
           debugShowCheckedModeBanner: false,
-         
           home:const Welcome(),
         );
         }

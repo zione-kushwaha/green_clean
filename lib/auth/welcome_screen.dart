@@ -44,7 +44,7 @@ class _WelcomeState extends State<Welcome> {
               ),
             ),
             SizedBox(height: height * 0.014),
-            const Text('Plant Green, Breadth Clean'),
+            const Text('Plant Green Breadth Clean'),
             SizedBox(height: height * 0.014),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

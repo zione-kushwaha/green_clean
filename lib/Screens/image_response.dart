@@ -1,15 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+
+import '../sections/message.bubble.dart';
 
 class TextAndImageInputScreen extends StatefulWidget {
   const TextAndImageInputScreen({Key? key}) : super(key: key);
@@ -27,7 +26,7 @@ class _TextAndImageInputScreenState extends State<TextAndImageInputScreen> {
   bool _loading = false;
   bool isPlaying = false;
    String searchedData='';
- 
+ final user=FirebaseAuth.instance.currentUser;
 
   Uint8List? selectedImage;
 
@@ -103,14 +102,23 @@ Future<void> _sendImage() async {
       await ref.putData(selectedImage!).then((taskSnapshot) async {
         // Retrieve the download URL after the file is uploaded
         final url = await ref.getDownloadURL();
-
+         if(controller.text==''){
+          return;
+         }
         // Store user data in Firestore with the download URL
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'message': controller.text, // Assuming user has a display name
+          'message': controller.text, 
           'email': user.email,
           'url': url,
+          'userId':user.uid
         });
-
+        print('admin');
+         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'message': 'Thanks for the query, we shall reach you soon!!', 
+          'email': 'admin@gmail.com',
+          'url': url,
+          'userId':'admin'
+        });
         // Set loading state to false
         setState(() {
           _loading = false;
@@ -218,17 +226,7 @@ Future<void> _sendImage() async {
       body: Column(
         children: [
           
-          if (searchedText != null)
-            MaterialButton(
-              color: Colors.orange,
-              onPressed: () {
-                setState(() {
-                  searchedText = null;
-                  result = null;
-                });
-              },
-              child: Text('Search: $searchedText'),
-            ),
+         
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -238,9 +236,9 @@ Future<void> _sendImage() async {
                    Expanded(
                     flex: 2,
                     child: loading
-                        ? Lottie.asset('assets/animation/animation.json')
+                        ? Center(child: CircularProgressIndicator())
                         : result != null
-                            ? Image.network(result!,height: 300,width: 300,) // Display image from URL
+                            ? Image.network(result!,height: 300,width: 300,) 
                             : const Center(
                                 child: Text('Search something!'),
                               ),),
@@ -259,9 +257,8 @@ Future<void> _sendImage() async {
                 ],
               ),
             ),
-          ),
-          if(searchedData!='')
-              Text(searchedData),
+          ), 
+        Text(searchedData),
           Card(
             margin: const EdgeInsets.all(12),
             child: Row(
@@ -280,7 +277,7 @@ Future<void> _sendImage() async {
                 ),
                 IconButton.filledTonal(
                   color: Colors.orange,
-                  onPressed: _showImageSourceOptions, // Show options modal
+                  onPressed: _showImageSourceOptions, 
                   icon: const Icon(Icons.add_a_photo, color: Colors.orange),
                 ),
                 IconButton(

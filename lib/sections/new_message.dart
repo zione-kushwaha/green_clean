@@ -86,12 +86,17 @@ class _NewMessagesState extends State<NewMessages> {
 
   void sendMessage() async {
     FocusScope.of(context).unfocus();
-    final user = await FirebaseAuth.instance.currentUser;
-
+    final user = FirebaseAuth.instance.currentUser;
+    print(user!.uid);
     FirebaseFirestore.instance.collection(widget.section).add({
       'text': controller.text,
       'createdAt': Timestamp.now(),
-      'userId': user!.uid,
+      'userId': user.uid,
+    });
+    FirebaseFirestore.instance.collection(widget.section).add({
+      'text': 'Our Admin will reach you soon',
+      'createdAt': Timestamp.now(),
+      'userId': 'admin',
     });
     controller.clear();
   }

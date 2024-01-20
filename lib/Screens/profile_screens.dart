@@ -4,6 +4,9 @@ import 'package:green_theme/Screens/chat_screen.dart';
 import 'package:green_theme/Screens/image_response.dart';
 import 'package:green_theme/Screens/query_section.dart';
 import 'package:green_theme/Screens/webview.dart';
+import 'package:green_theme/detail/detail.dart';
+import 'package:green_theme/detail/information.dart';
+import 'package:green_theme/detail/weather.dart';
 import 'package:green_theme/drawer/drawer.dart';
 import 'package:green_theme/route_animation.dart';
 
@@ -12,19 +15,12 @@ class ProfileScreen extends StatelessWidget {
   String email;
   ProfileScreen({super.key, required this.username, required this.email});
 
-  final List<String> imageUrls = [
-    'https://source.unsplash.com/featured/?helicopter',
-    'https://source.unsplash.com/featured/?aeroplane',
-    'https://source.unsplash.com/featured/?car',
-    'https://source.unsplash.com/featured/?bus',
-  ];
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return DefaultTabController(
-      length: 2,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Welcome!!!'),
@@ -39,10 +35,10 @@ class ProfileScreen extends StatelessWidget {
                   height: 0.01 * height,
                 ),
                 CarouselSlider.builder(
-                  itemCount: imageUrls.length,
+                  itemCount: 6,
                   options: CarouselOptions(
-                    autoPlayInterval: Duration(seconds: 2),
-                    autoPlayAnimationDuration: Duration(seconds: 1),
+                    autoPlayInterval: const Duration(seconds: 2),
+                    autoPlayAnimationDuration: const Duration(seconds: 1),
                     height: 200.0,
                     enlargeCenterPage: true,
                     autoPlay: true,
@@ -51,14 +47,13 @@ class ProfileScreen extends StatelessWidget {
                     enableInfiniteScroll: true,
                   ),
                   itemBuilder: (context, index, realIndex) {
-                    return Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Image.network(
-                          imageUrls[index],
-                          fit: BoxFit.cover,
+                    return Card(
+                      child: Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15.0),
+                          child: Image.asset('assets/images/$index.jpg',fit: BoxFit.cover,),
                         ),
                       ),
                     );
@@ -160,12 +155,17 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-          Container(),
+        
+         detail_screen(),
+         BingSearch(),
+          weatherdata(),
         ]),
         bottomNavigationBar: const TabBar(
           tabs: [
             Tab(text: 'Home'),
             Tab(text: 'Details'),
+            Tab(text: 'info',),
+            Tab(text: 'weather',)
           ],
         ),
       ),

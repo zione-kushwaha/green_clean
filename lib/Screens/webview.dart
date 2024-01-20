@@ -87,7 +87,7 @@ class _WebViewExampleState extends State<WebViewExample> {
         },
       )
       ..loadRequest(Uri.parse(
-          'https://f03e-2407-5200-300-3ed1-3d56-c20a-40a1-6f5d.ngrok-free.app'));
+          'https://a436-27-34-105-227.ngrok-free.app'));
 
     if (controller.platform is AndroidWebViewPlatform) {
       // Handle any Android-specific configurations here if needed

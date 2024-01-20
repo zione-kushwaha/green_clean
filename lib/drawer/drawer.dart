@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:green_theme/drawer/profile_page.dart';
+import 'package:green_theme/drawer/setting_screen.dart';
+import 'package:green_theme/route_animation.dart';
 
 class Drawer_section extends StatelessWidget {
   @override
@@ -55,23 +58,16 @@ class Drawer_section extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-           
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
                 // Handle Profile option
-                Navigator.pop(context);}
-            ),
-             ListTile(
-              leading: const Icon(Icons.key),
-              title: const Text('Licence'),
-              onTap: () {
-                // Handle Home option
+                _navigateToNextScreen(context, 'profile_page');
                 Navigator.pop(context);
               },
             ),
-            ListTile(
+             ListTile(
               leading: const Icon(Icons.share),
               title: const Text('Share'),
               onTap: () {
@@ -79,9 +75,9 @@ class Drawer_section extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
+             ListTile(
               leading: const Icon(Icons.star),
-              title: const Text('Ratting'),
+              title: const Text('Rating'),
               onTap: () {
                 // Handle Home option
                 Navigator.pop(context);
@@ -91,7 +87,7 @@ class Drawer_section extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                
+                _navigateToNextScreen(context, "setting");
                 Navigator.pop(context);
               },
             ),
@@ -99,5 +95,14 @@ class Drawer_section extends StatelessWidget {
         ),
       );
     
+  }
+  void _navigateToNextScreen(BuildContext context, String screen) {
+    Future.delayed(const Duration(milliseconds: 200), () async {
+      if (screen == "setting") {
+        Navigator.of(context).push(createRoute(const setting_screen()));
+      } else if(screen=='profile_page'){
+         Navigator.of(context).push(createRoute(const profile_page()));
+      }
+    });
   }
 }
