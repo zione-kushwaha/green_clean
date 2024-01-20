@@ -4,7 +4,6 @@ import 'package:green_theme/auth/welcome_screen.dart';
 import 'package:green_theme/providers/themeProvider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import './Screens/profile_screens.dart';
 
 //weatherpikey:- de30a0d751384a7fb1282d2a2e50e31b
 void main() async{
